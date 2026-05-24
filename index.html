@@ -1161,19 +1161,34 @@
                 <div class="lg:col-span-7 transition-all duration-1000 delay-200 transform ease-out"
                     :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'">
                     <form
-                        @submit.prevent="alert('Thank you for reaching out! Your message has been simulated successfully.'); $el.reset();"
+                        @submit.prevent="
+                            const formData = new FormData($el);
+                            fetch('https://api.web3forms.com/submit', {
+                                method: 'POST',
+                                body: formData
+                            }).then(() => {
+                                alert('Thank you for reaching out! Your message has been sent successfully.');
+                                const phone = '916201393651';
+                                const text = `Hi Shivam, I am ${formData.get('name')} (${formData.get('email')}).\n\nSubject: ${formData.get('subject')}\n\nMessage: ${formData.get('message')}`;
+                                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+                                $el.reset();
+                            }).catch(err => {
+                                alert('Something went wrong. Please try again.');
+                            });
+                        "
                         class="bg-white p-10 rounded-[2.5rem] border border-gray-200/80 shadow-xl shadow-gray-100/50 space-y-8">
+                        <input type="hidden" name="access_key" value="703ff81d-f7fc-4264-9f9e-799888ed0afc">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
                             <div>
                                 <label for="name" class="block text-sm font-extrabold text-gray-800 mb-2.5">Name
                                     *</label>
-                                <input type="text" id="name" required placeholder="John Doe"
+                                <input type="text" id="name" name="name" required placeholder="John Doe"
                                     class="w-full px-5 py-4 rounded-2xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent transition-all font-medium text-base">
                             </div>
                             <div>
                                 <label for="email" class="block text-sm font-extrabold text-gray-800 mb-2.5">Email
                                     *</label>
-                                <input type="email" id="email" required placeholder="john@example.com"
+                                <input type="email" id="email" name="email" required placeholder="john@example.com"
                                     class="w-full px-5 py-4 rounded-2xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent transition-all font-medium text-base">
                             </div>
                         </div>
@@ -1181,14 +1196,14 @@
                         <div>
                             <label for="subject"
                                 class="block text-sm font-extrabold text-gray-800 mb-2.5">Subject</label>
-                            <input type="text" id="subject" placeholder="Job Opportunity / Project Collaboration"
+                            <input type="text" id="subject" name="subject" placeholder="Job Opportunity / Project Collaboration"
                                 class="w-full px-5 py-4 rounded-2xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent transition-all font-medium text-base">
                         </div>
 
                         <div>
                             <label for="message" class="block text-sm font-extrabold text-gray-800 mb-2.5">Message
                                 *</label>
-                            <textarea id="message" rows="5" required placeholder="Hi Shivam, I would like to discuss..."
+                            <textarea id="message" name="message" rows="5" required placeholder="Hi Shivam, I would like to discuss..."
                                 class="w-full px-5 py-4 rounded-2xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent transition-all font-medium text-base custom-scrollbar"></textarea>
                         </div>
 
